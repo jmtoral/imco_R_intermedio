@@ -1,0 +1,150 @@
+---
+title: "Sesión 2"
+subtitle: <h4 style="font-style:normal">Visualizaciones avanzadas en R</h4>
+date: <h4 style="font-style:normal">27 de febrero de 2021</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+\
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Vamos a scrapear las mañanera
+
+# Bibliotecas
+
+```{r}
+pacman::p_load(tidyverse,
+               tidytext,
+               rvest,
+               quanteda)
+```
+
+# Datos
+
+Observemos la página de las conferencias del presidente. Veamos cómo se comporta.
+
+```{r}
+links <- paste0("https://presidente.gob.mx/sala-de-prensa/transcripciones/page/",
+                1:5)
+```
+
+
+## Usando un lapply
+
+
+```{r}
+
+url <- lapply(links, function(i){
+  
+  webpage <- read_html(i)
+  
+  webpage %>% 
+    html_nodes(".entry-title a") %>% 
+    html_attr("href") %>% 
+    as_tibble()
+  
+})
+
+urls <- bind_rows(url)
+```
+
+Extraer información de todas las páginas web.
+
+
+```{r}
+titulos <- lapply(urls$value, function(i){
+  
+  read_html(i) %>% 
+    html_nodes(".entry-title") %>% 
+    html_text() 
+  
+})
+
+texto <- lapply(urls$value, function(i){
+  
+  read_html(i) %>% 
+    html_nodes(".entry-content") %>% 
+    html_text() %>% 
+    as_tibble()
+  
+})
+```
+
+
+```{r}
+discursos <- tibble(
+  titulo = unlist(titulos),
+  texto = unlist(texto)
+  )
+```
+
+
+## Limpieza
+
+```{r}
+discursos %>% 
+  mutate(fecha = str_extract(titulo, '[^ ]*'),
+         fecha = str_replace()) %>% 
+  mutate(titulo = str_remove(titulo, fecha)) %>% 
+  mutate(texto = str_remove(texto, "[\r\n\t]"))
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

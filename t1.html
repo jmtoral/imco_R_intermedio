@@ -11,7 +11,7 @@
 
 
 
-<title>Syllabus</title>
+<title>Tarea 1</title>
 
 <script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -445,12 +445,12 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Syllabus</h1>
+<h1 class="title toc-ignore">Tarea 1</h1>
 <h3 class="subtitle"><h4 style="font-style:normal">
-Curso introductorio al lenguaje R
+Tarea 1
 </h4></h3>
 <h4 class="date"><h4 style="font-style:normal">
-Otoño 2020
+Febrero/MArzo 2021
 </h4></h4>
 
 </div>
@@ -489,37 +489,89 @@ h2.title {
 </style>
 <p><br />
 </p>
-<div id="sesión-1" class="section level2">
-<h2>Sesión 1</h2>
-<div id="visualizaciones-avanzadas" class="section level3">
-<h3>Visualizaciones avanzadas</h3>
-<p>Veremos algunas visualizaciones interactivas y profundizaremos más sobre el trabajo de la gramática de gráficos.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="scraping-básico-y-análisis-de-lenguaje-natural" class="section level3">
-<h3>Scraping básico y análisis de lenguaje natural</h3>
+<p>Las tareas de este curso serán menos guiadas, pero tratarán de estimular de manera más intensa su creatividad para resolver problemas.</p>
+<p>Por ejemplo, esta semana la idea es participar en la dinámica de <em>#tidytuesday</em> y compartir alguna visualización con la comunidad de internet. La base de esta semana (puedes ver el repositorio y el calendario <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-02/readme.md">aquí</a>) se trata de los anuncios del Super Tazón.</p>
+<p>Utiliza las bibliotecas que vimos en clase para hacer una visualición como más te guste.</p>
+<ol style="list-style-type: decimal">
+<li><p>Carga las bibliotecas.</p></li>
+<li><p>Carga los datos y exploralos con <code>glimpse</code>.</p></li>
+</ol>
+<pre class="r"><code>youtube &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-02/youtube.csv&#39;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   year = col_double(),
+##   funny = col_logical(),
+##   show_product_quickly = col_logical(),
+##   patriotic = col_logical(),
+##   celebrity = col_logical(),
+##   danger = col_logical(),
+##   animals = col_logical(),
+##   use_sex = col_logical(),
+##   view_count = col_double(),
+##   like_count = col_double(),
+##   dislike_count = col_double(),
+##   favorite_count = col_double(),
+##   comment_count = col_double(),
+##   published_at = col_datetime(format = &quot;&quot;),
+##   category_id = col_double()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>¿Qué observas de la base?, ¿qué datos te podrían servir para graficar algo?</p>
+<p>Hay un grupo de variables dicotómicas que permite observar el principal característica de cada comercial, ¿cómo podrías usarlo?</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Planea tu gráfica. En una hoja de papel o lienzo de paint dibuja cómo imaginas tu gráfica.</li>
+</ol>
+<p>Algunas ideas:</p>
 <ul>
-<li>Con base en las mañaneras del Presidente de la República y de <code>rvest</code> vamos a descargar información de la web y analizarla.</li>
+<li>¿Cuál es la empresa que más comerciales ha tenido para el medio tiempo del Súper Bowl?</li>
 </ul>
-<div style="margin-bottom:25px;">
+<pre><code>## -- Attaching packages --------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
+## v tibble  3.0.1     v dplyr   1.0.0
+## v tidyr   1.1.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>conteo_marca &lt;- youtube %&gt;% 
+  count(brand) %&gt;% 
+  arrange(-n)
 
-</div>
-</div>
-<div id="trabajo-de-encuestas-y-uso-de-directorios" class="section level3">
-<h3>Trabajo de encuestas y uso de directorios</h3>
-<div style="margin-bottom:25px;">
 
-</div>
-</div>
-<div id="una-provocación-a-los-modelos-de-predicción" class="section level3">
-<h3>Una provocación a los modelos de predicción</h3>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
+ggplot(conteo_marca,
+       aes(x=reorder(brand, -n), 
+           y=n)) +
+  geom_col()</code></pre>
+<p><img src="t1_files/figure-html/unnamed-chunk-3-1.png" /><!-- --></p>
+<ul>
+<li>¿Qué empresa ha tenido más vistas a través de los años?</li>
+</ul>
+<pre class="r"><code>vistas &lt;- youtube %&gt;%
+  group_by(brand) %&gt;% 
+  summarise(vistas_totales = sum(like_count, na.rm=T)) </code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>ggplot(vistas,
+       aes(x=brand,
+       y=vistas_totales/1000)
+       ) +
+  ggalt::geom_lollipop()</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggalt&#39;:
+##   method                  from   
+##   grid.draw.absoluteGrob  ggplot2
+##   grobHeight.absoluteGrob ggplot2
+##   grobWidth.absoluteGrob  ggplot2
+##   grobX.absoluteGrob      ggplot2
+##   grobY.absoluteGrob      ggplot2</code></pre>
+<p><img src="t1_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<ul>
+<li><p><strong>¿Cuál es la empresa más odiada?</strong> Puedes hacer una variable con <code>mutate</code> que de el total de <em>likes</em> menos <em>dislikes</em>, agrupar por marca, sumarizar el promedio de ese número y graficarla con un <code>geom_col</code>.</p></li>
+<li><p><strong>¿El uso de sexo para vender se ha acentuado con los años?</strong> Al ser dicotómica, la variable <code>use_sex</code> puede ser sumada como un número. Utiliza esa característica para sumar el número de comerciales que tienen como tema principal el sexo para vender agrupados por años. Grafica con una línea.</p></li>
+</ul>
+<p>Recuerda que puedes usar <code>facet_wrap()</code> o una animación para aprovechar la variable “year”-</p>
+<ol start="4" style="list-style-type: decimal">
+<li>Usa <code>theme()</code> o alguno de los temas precargados para modificar lo que no te guste y añade las <code>labs()</code> necesarias.</li>
+</ol>
 
 
 

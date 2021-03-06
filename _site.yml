@@ -14,12 +14,6 @@ navbar:
       href: index.html
     - text: "Syllabus"
       href: syllabus.html
-    - text: "Presentaciones"
-      menu:
-        - text: "Presentación 1"
-          href: p1.html  
-        - text: "Presentación 2"
-          href: p2.html
     - text: "Código"
       menu:
         - text: "Sesión 1"
@@ -30,8 +24,6 @@ navbar:
       menu:
         - text: "Tarea 1"
           href: t1.html
-        - text: "Tarea 2"
-          href: t2.html
     - text: "Acerca del instructor"
       href: about.html
 output:
