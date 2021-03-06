@@ -11,7 +11,7 @@
 
 
 
-<title>Syllabus</title>
+<title>Sesión 2</title>
 
 <script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -427,12 +427,12 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Syllabus</h1>
+<h1 class="title toc-ignore">Sesión 2</h1>
 <h3 class="subtitle"><h4 style="font-style:normal">
-Curso introductorio al lenguaje R
+Visualizaciones avanzadas en R
 </h4></h3>
 <h4 class="date"><h4 style="font-style:normal">
-Febrero/Marzo 2021
+27 de febrero de 2021
 </h4></h4>
 
 </div>
@@ -471,39 +471,61 @@ h2.title {
 </style>
 <p><br />
 </p>
-<div id="sesión-1" class="section level2">
-<h2>Sesión 1</h2>
-<div id="visualizaciones-avanzadas" class="section level3">
-<h3>Visualizaciones avanzadas</h3>
-<ul>
-<li>Veremos algunas visualizaciones interactivas y profundizaremos más sobre el trabajo de la gramática de gráficos.</li>
-<li>Haremos gráficas interactivas.</li>
-<li>Animaremos algunas animaciones.</li>
-</ul>
-<div style="margin-bottom:25px;">
+<p>Vamos a scrapear las mañanera</p>
+<div id="bibliotecas" class="section level1">
+<h1>Bibliotecas</h1>
+<pre class="r"><code>pacman::p_load(tidyverse,
+               tidytext,
+               rvest,
+               quanteda)</code></pre>
+</div>
+<div id="datos" class="section level1">
+<h1>Datos</h1>
+<p>Observemos la página de las conferencias del presidente. Veamos cómo se comporta.</p>
+<pre class="r"><code>links &lt;- paste0(&quot;https://presidente.gob.mx/sala-de-prensa/transcripciones/page/&quot;,
+                1:5)</code></pre>
+<div id="usando-un-lapply" class="section level2">
+<h2>Usando un lapply</h2>
+<pre class="r"><code>url &lt;- lapply(links, function(i){
+  
+  webpage &lt;- read_html(i)
+  
+  webpage %&gt;% 
+    html_nodes(&quot;.entry-title a&quot;) %&gt;% 
+    html_attr(&quot;href&quot;) %&gt;% 
+    as_tibble()
+  
+})
 
-</div>
-</div>
-<div id="scraping-básico-y-análisis-de-lenguaje-natural" class="section level3">
-<h3>Scraping básico y análisis de lenguaje natural</h3>
-<ul>
-<li>Con base en las mañaneras del Presidente de la República y de <code>rvest</code> vamos a descargar información de la web y analizarla.</li>
-</ul>
-<div style="margin-bottom:25px;">
+urls &lt;- bind_rows(url)</code></pre>
+<p>Extraer información de todas las páginas web.</p>
+<pre class="r"><code>titulos &lt;- lapply(urls$value, function(i){
+  
+  read_html(i) %&gt;% 
+    html_nodes(&quot;.entry-title&quot;) %&gt;% 
+    html_text() 
+  
+})
 
+texto &lt;- lapply(urls$value, function(i){
+  
+  read_html(i) %&gt;% 
+    html_nodes(&quot;.entry-content&quot;) %&gt;% 
+    html_text() %&gt;% 
+    as_tibble()
+  
+})</code></pre>
+<pre class="r"><code>discursos &lt;- tibble(
+  titulo = unlist(titulos),
+  texto = unlist(texto)
+  )</code></pre>
 </div>
-</div>
-<div id="trabajo-de-encuestas-y-uso-de-directorios" class="section level3">
-<h3>Trabajo de encuestas y uso de directorios</h3>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="una-provocación-a-los-modelos-de-predicción" class="section level3">
-<h3>Una provocación a los modelos de predicción</h3>
-<div style="margin-bottom:25px;">
-
-</div>
+<div id="limpieza" class="section level2">
+<h2>Limpieza</h2>
+<pre class="r"><code>discursos %&gt;% 
+  mutate(fecha = str_extract(titulo, &#39;[^ ]*&#39;)) %&gt;% 
+  mutate(titulo = str_remove(titulo, fecha)) %&gt;% 
+  mutate(texto = str_remove(texto, &quot;[\r\n\t]&quot;))</code></pre>
 </div>
 </div>
 

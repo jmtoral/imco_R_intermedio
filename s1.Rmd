@@ -337,7 +337,7 @@ ggplot(dp) +
 
 ```{r}
 
-install.packages("waffle", repos = "https://cinc.rud.is")
+#install.packages("waffle", repos = "https://cinc.rud.is")
 library(waffle)
 
 ggplot(dp,

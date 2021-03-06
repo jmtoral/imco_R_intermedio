@@ -1,7 +1,7 @@
 ---
 title: "Syllabus"
 subtitle: <h4 style="font-style:normal">Curso introductorio al lenguaje R</h4>
-date: <h4 style="font-style:normal">Otoño 2020</h4>
+date: <h4 style="font-style:normal">Febrero/Marzo 2021</h4>
 output: 
   html_document:
     toc: true
@@ -51,7 +51,9 @@ h2.title {
 
 ### Visualizaciones avanzadas
 
-Veremos algunas visualizaciones interactivas y profundizaremos más sobre el trabajo de la gramática de gráficos.
+- Veremos algunas visualizaciones interactivas y profundizaremos más sobre el trabajo de la gramática de gráficos.
+- Haremos gráficas interactivas.
+- Animaremos algunas animaciones.
 
 <div style="margin-bottom:25px;">
 </div>
