@@ -1,0 +1,48 @@
+name: "Intermedio_IMCO"
+output_dir: "."
+navbar:
+  title: "Curso Intermedio de R | IMCO"
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/jmtoral/
+    - icon: fa-envelope-o fa-lg
+      href: mailto:jmtoralcruz@gmail.com
+    - icon: fa-twitter fa-lg
+      href: https://twitter.com/jmtoralc
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Syllabus"
+      href: syllabus.html
+    - text: "Presentaciones"
+      menu:
+        - text: "Presentación 1"
+          href: p1.html  
+        - text: "Presentación 2"
+          href: p2.html
+    - text: "Código"
+      menu:
+        - text: "Sesión 1"
+          href: s1.html
+        - text: "Sesión 2"
+          href: s2.html 
+    - text: "Tareas"
+      menu:
+        - text: "Tarea 1"
+          href: t1.html
+        - text: "Tarea 2"
+          href: t2.html
+    - text: "Acerca del instructor"
+      href: about.html
+output:
+  html_document:
+    theme: spacelab
+    highlight: textmate
+    mathjax: ~
+    toc_depth: 3
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+      number_sections: yes
+    css: styles.css
+    keep_md: true

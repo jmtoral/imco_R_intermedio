@@ -1,0 +1,365 @@
+---
+title: "Sesión 1"
+subtitle: <h4 style="font-style:normal">Visualizaciones avanzadas en R</h4>
+date: <h4 style="font-style:normal">27 de febrero de 2021</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+\
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## 1. Bibliotecas
+
+```{r}
+pacman::p_load(
+  tidyverse, # Tidyverse y sus funciones
+  gapminder, # Acceso a la base de datos de gapminder
+  plotly, # Gráficas interactivas en javascript
+  leaflet, # Mapas interactivos
+  cowplot, # Ordenar, etiquetar
+  ggthemes, # Temas cosméticos
+  hrbrthemes, # Opción de temas elegantes
+  gganimate, # Gráficas animadas
+  ggforce, # Muchas geometrías y etiquetas
+  ggridges, # Creación de ridges
+  ggrepel, # Etiquetas que se repelan
+  ggpol, # graficas de arco
+  waffle, # Gráficas de wafles
+  spotifyr # Spotifyr
+)
+```
+
+
+Forma adicional de instalar spotifyR
+ 
+
+```{r, eval=F}
+library(devtools)
+devtools::install_github('charlie86/spotifyr')
+library(spotifyr)
+```
+
+
+## 2. Datos
+
+```{r, echo=F}
+tu_id = "24d199b3349d4b9d8307c40af0e66297"
+tu_id_secreta = "6bcbe6a83dce4433829b5e85105800ce"
+```
+
+
+
+```{r}
+Sys.setenv(SPOTIFY_CLIENT_ID = tu_id) #Usar id de spotify
+Sys.setenv(SPOTIFY_CLIENT_SECRET = tu_id_secreta)
+
+access_token <- get_spotify_access_token()
+
+mana <- get_artist_audio_features("maná")
+
+#mana <- read_csv("input/mana.csv")
+```
+
+
+
+## 3. Un breve repaso a ggplot2
+
+```{r}
+glimpse(mana)
+
+ggplot(
+  data = mana,
+  aes(
+    x = album_release_year,
+    y = valence
+  )
+) + # Los elementos gráficos se unen con un signo de +
+  geom_point()
+
+
+ggplot(
+  data = mana,
+  aes(
+    x = as.factor(album_release_year),
+    y = valence
+  )
+) + # Los elementos gráficos se unen con un signo de +
+  geom_boxplot() +
+  geom_jitter(width = 0.2)
+
+
+ggplot(
+  data = mana,
+  aes(
+    x = as.factor(album_release_year),
+    y = valence
+  )
+) + # Los elementos gráficos se unen con un signo de +
+  geom_violin() +
+  geom_sina()
+```
+
+
+## 4. Temas y paletas
+
+
+```{r}
+
+caja <- ggplot(
+  data = mana,
+  aes(
+    x = as.factor(album_release_year),
+    y = valence,
+    fill = album_name
+  )
+) + # Los elementos gráficos se unen con un signo de +
+  geom_boxplot() 
+
+ggplotly(caja)
+
+caja_dark <- ggplot(
+  data = mana,
+  aes(
+    x = as.factor(album_release_year),
+    y = valence,
+    fill = album_name
+  )
+) +
+  geom_boxplot(color="white") +
+  labs(title ="Las canciones de Maná no se han hecho tristes con el tiempo",
+       subtitle = "Felicidad de las canciones de Maná por álbum",
+       x ="", 
+       y = "Felicidad",
+       caption = "Elaborado por @jmtoralc | Datos de la API de Spotify") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size= 20, color="white"),
+    plot.subtitle = element_text(hjust = 0.5, size= 15, color ="white"),
+    plot.background = element_rect(fill="black"),
+    panel.background = element_rect(fill="black"),
+    panel.grid = element_blank(),
+    text = element_text(colour="white"),
+    axis.text = element_text(colour="white")
+  )
+
+#ggsave("outputs/caja1.svg")
+
+caja_dark
+
+caja +
+  theme_stata()
+```
+
+
+Usar una interfaz gráfica.
+
+```{r, eval=F}
+library(esquisse)
+
+esquisse::esquisser()
+```
+
+
+`
+
+
+## 5. Escalas
+
+Propongamos una ecuación:
+
+$$dance = valence x + u $$
+
+```{r}
+ggplot(
+  data = mana,
+  aes(
+    x = valence,
+    y = danceability,
+    size = tempo                        
+  )
+) +
+  geom_point(aes(color=album_name), alpha=0.5) +
+  #geom_smooth(method = "lm", se=F) +
+  guides(color = F) +
+  #geom_mark_rect(aes(color=album_name)) 
+  scale_color_manual(values = c("#81d8d0","blue","red","red","red",
+                                "red","red","red","orange","red","red",
+                                "red","red","pink","red", "red")) +
+  #scale_color_brewer(palette="Blues")
+  scale_x_continuous(limits=c(0,1),
+                     breaks = c(0,0.25,0.5,0.75, 1),
+                     labels = c("Nada feliz", 
+                                "Poco feliz", 
+                                "Ni feliz o infeliz", 
+                                "Algo feliz", 
+                                "Muiy feliz")) +
+  scale_y_continuous(limits=c(0,1),
+                     breaks = c(0,0.25,0.5,0.75, 1),
+                     labels = c("Nada bailable", 
+                                "Poco bailable", 
+                                "Ninguno", 
+                                "Algo bailable", 
+                                "Muiy bailable")) +
+  scale_size(range = c(0,8),
+             breaks = c(50, 100, 150, 200),
+             limits = c(50,200))
+```
+
+
+ 
+## 6. Animación
+
+```{r}
+
+#install.packages("transformr")
+
+ggplot(
+  data = mana,
+  aes(
+    x = valence,
+    y = danceability
+  )
+) +
+  geom_point() +
+  geom_smooth(se=F, method = "lm") +
+  guides(fill=F) +
+  transition_states(
+    album_name,
+    transition_length = 2,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ease_aes("sine-in-out") +
+  labs(title = "Álbum: {closest_state}")
+```
+
+
+#### Ejercicio Gapminder
+
+```{r}
+
+gapminder
+
+ggplot(
+  data = gapminder,
+  aes(
+    x = gdpPercap,
+    y = lifeExp,
+    color = country,
+    size= pop
+  )
+) +
+  geom_point(alpha = 0.7) +
+  guides(color =F,
+         size= F) +
+  scale_color_manual(values = country_colors) +
+  scale_size(range = c(1, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  labs(title = "Año: {frame_time}") +
+  transition_time(year) +
+  ease_aes("linear")
+```
+
+
+### Graficar un parlamento
+
+
+```{r}
+
+dp <- tibble(
+  partidos = c("conservador", "liberal", "radicales"),
+  asientos = c(150, 30, 20),
+  colores = c("navyblue", "darkred", "red"),
+)
+
+
+ggplot(dp) +
+  geom_parliament(aes(
+    seats = asientos,
+    fill = partidos
+  )) +
+  scale_fill_manual(values = dp$colores,
+                    labels = dp$partidos) +
+  coord_fixed() +
+  theme_void()
+```
+
+
+
+### Graficar un waffle
+
+```{r}
+
+install.packages("waffle", repos = "https://cinc.rud.is")
+library(waffle)
+
+ggplot(dp,
+       aes(fill= partidos,
+           values = asientos)) +
+  geom_waffle(n_rows = 4, size=0.2,
+              color ="white", flip = F) +
+  coord_equal() +
+  theme_void() +
+  theme_enhance_waffle()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
